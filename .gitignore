@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Environment files (keep examples)
+.env
+.env.local
+.env.*.local
+
+# Next.js
+.next/
+out/
+
+# Build output
+build/
+dist/
+
+# Strapi
+.strapi/
+.tmp/
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# IDE
+.vscode/
+
+# Misc
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+docs/
