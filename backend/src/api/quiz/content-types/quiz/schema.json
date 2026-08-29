@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quizzes",
+  "info": {
+    "singularName": "quiz",
+    "pluralName": "quizzes",
+    "displayName": "Quiz",
+    "description": "A quiz with embedded questions and options"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "passingScore": {
+      "type": "integer",
+      "default": 60
+    },
+    "questions": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quiz.question"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "quizzes"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quiz_attempts",
+  "info": {
+    "singularName": "quiz-attempt",
+    "pluralName": "quiz-attempts",
+    "displayName": "Quiz Attempt",
+    "description": "A student's graded quiz submission"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "quiz": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::quiz.quiz"
+    },
+    "score": {
+      "type": "integer"
+    },
+    "total": {
+      "type": "integer"
+    },
+    "percentage": {
+      "type": "integer"
+    },
+    "submittedAnswers": {
+      "type": "json"
+    },
+    "gradedBreakdown": {
+      "type": "json"
+    },
+    "submittedAt": {
+      "type": "datetime"
+    }
+  }
+}

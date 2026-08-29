@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_quiz_options",
+  "info": {
+    "displayName": "Option",
+    "description": "A quiz option that may or may not be correct"
+  },
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "isCorrect": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

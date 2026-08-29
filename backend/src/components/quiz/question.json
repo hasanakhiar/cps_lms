@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_quiz_questions",
+  "info": {
+    "displayName": "Question",
+    "description": "A quiz question with a prompt and options"
+  },
+  "attributes": {
+    "prompt": {
+      "type": "text",
+      "required": true
+    },
+    "options": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quiz.option"
+    }
+  }
+}
