@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lesson_completions",
+  "info": {
+    "singularName": "lesson-completion",
+    "pluralName": "lesson-completions",
+    "displayName": "Lesson Completion",
+    "description": "Records one student completing one lesson"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "lesson": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::lesson.lesson"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course"
+    },
+    "completedAt": {
+      "type": "datetime"
+    }
+  }
+}
