@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Plus } from "lucide-react";
 import { requireRole } from "@/lib/auth-guards";
 import { getTeachingCourses } from "@/lib/api/teach";
 import { listCourses } from "@/lib/api/courses";
@@ -48,7 +48,16 @@ export default async function AdminCoursesPage() {
       <PageHeader
         title="All courses"
         description="Every course regardless of owner. Editing uses the same screens instructors use — the ownership policy already lets an admin through."
-      />
+      >
+        {/* An admin may create a course like any other staff role — the route policy
+            already lists `admin`, and `course.create` sets ownership from the session.
+            The form itself is the shared `/teach` one, for the same reason the edit
+            links below are: one editor, one policy, one place for a bug. */}
+        <Button render={<Link href="/teach/courses/new" />}>
+          <Plus className="size-4" aria-hidden="true" />
+          New course
+        </Button>
+      </PageHeader>
 
       {courses.length === 0 ? (
         <EmptyState
