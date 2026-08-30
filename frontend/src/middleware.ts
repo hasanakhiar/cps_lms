@@ -22,6 +22,10 @@ const ROUTE_ROLES: Record<string, readonly RoleType[]> = {
   "/admin": ["admin"],
   "/teach": ["admin", "content-manager", "instructor"],
   "/teach/blog": ["admin", "content-manager"],
+  // Instructors manage the courses they own but do not create new ones, so the
+  // creation screen is staff-only. Longest-prefix matching puts this ahead of
+  // `/teach`, the same way `/teach/blog` sits ahead of it.
+  "/teach/courses/new": ["admin", "content-manager"],
   "/my-courses": ["student"],
   "/learn": ["student"],
   "/my-results": ["student"],

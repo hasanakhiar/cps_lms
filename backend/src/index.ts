@@ -160,7 +160,9 @@ export default {
     const instructorActions = [
       ...publicActions,
       meAction,
-      'api::course.course.create',
+      // `api::course.course.create` is deliberately absent — see
+      // `contentManagerActions`. Instructors manage courses they own; they do not
+      // add courses to the catalogue.
       'api::course.course.update',
       'api::course.course.delete',
       'api::lesson.lesson.findOne',
@@ -178,6 +180,11 @@ export default {
 
     const contentManagerActions = [
       ...instructorActions,
+      // Catalogue authorship starts here rather than in `instructorActions`, so the
+      // permission table and the route policy in `course.ts` say the same thing. The
+      // route would refuse an instructor either way; a permission they can never use
+      // would just be a lie in the table.
+      'api::course.course.create',
       'api::blog-post.blog-post.create',
       'api::blog-post.blog-post.update',
       'api::blog-post.blog-post.delete',

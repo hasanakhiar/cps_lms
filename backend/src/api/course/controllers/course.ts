@@ -106,14 +106,30 @@ const attachInstructorNames = async (payload: unknown): Promise<void> => {
 
 export default factories.createCoreController('api::course.course', ({ strapi }) => ({
   /**
-   * Ownership is assigned from the session, never from the request.
+   * Ownership is assigned from the session, never from the request — and assigned
+   * *after* the content API has finished with the payload.
    *
-   * Without this, any authenticated instructor could POST
-   * `{ data: { instructor: <someone else's id> } }` and create a course owned by a
-   * colleague — which would then pass `is-course-owner-or-manager` for that
-   * colleague and not for the actual author. Whatever the client sent is discarded
-   * rather than validated, because there is no legitimate reason for a client to
-   * send it at all.
+   * The obvious implementation is to write `instructor: user.id` into
+   * `ctx.request.body.data` and let `super.create` persist it. That produced
+   * `ValidationError: Invalid key instructor` for every role. The cause is
+   * `throwRestrictedRelations`, one of the visitors Strapi runs over create input
+   * in `validate.contentAPI.input`: a relation key is rejected outright unless the
+   * caller has read access to the relation's *target* content type. The target here
+   * is `plugin::users-permissions.user`, and no role on this platform is granted
+   * `users-permissions.user.find` — deliberately, because that would expose the
+   * entire user table to get one username. So the validator refused a value the
+   * client never sent and the server had just written itself.
+   *
+   * Granting the user permission to make the error go away would trade a real
+   * security property for a convenience, so ownership is applied through the Query
+   * Engine instead, which sits below the content API and its permission-derived
+   * validation. The security property is unchanged and slightly stronger: the
+   * relation is now unreachable from the request body by construction, since the
+   * body is never the thing that carries it.
+   *
+   * A client-supplied `instructor` is still deleted first. Without that, the create
+   * would fail validation exactly as before — and a rejected request is a worse
+   * answer than an ignored field for something no legitimate client sends.
    */
   async create(ctx) {
     const user = ctx.state.user;
@@ -125,12 +141,36 @@ export default factories.createCoreController('api::course.course', ({ strapi })
       return ctx.unauthorized('Authentication required');
     }
 
-    ctx.request.body = {
-      ...ctx.request.body,
-      data: { ...(ctx.request.body?.data ?? {}), instructor: user.id },
-    };
+    if (ctx.request.body?.data && 'instructor' in ctx.request.body.data) {
+      delete ctx.request.body.data.instructor;
+    }
 
-    return super.create(ctx);
+    const response = await super.create(ctx);
+    const documentId = (response as { data?: { documentId?: string } })?.data?.documentId;
+
+    if (!documentId) {
+      // `super.create` resolved without a documentId, so there is nothing to attach
+      // ownership to and nothing to roll back either. Loud, because the course that
+      // was just created — if one was — has no owner and only a log line will say so.
+      strapi.log.error('course.create: no documentId in response; ownership not assigned');
+      return response;
+    }
+
+    try {
+      await strapi.db.query('api::course.course').update({
+        where: { documentId },
+        data: { instructor: user.id },
+      });
+    } catch (error) {
+      // An ownerless course is worse than a failed create: it is invisible to
+      // `/courses/teaching`, and `is-course-owner-or-manager` denies every
+      // instructor for it, so nobody below admin can ever edit or remove it. Undo
+      // the create and let the caller see the failure.
+      await strapi.db.query('api::course.course').delete({ where: { documentId } });
+      throw error;
+    }
+
+    return response;
   },
 
   /**

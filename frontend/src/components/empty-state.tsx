@@ -5,10 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 /**
  * The "there is nothing here" state.
  *
- * Every empty state takes an action, because an empty page with no way forward is a
- * dead end — a student with no enrolments should be one click from the catalogue, not
- * left to find it. The action is required by the type rather than optional, so it
- * cannot be forgotten.
+ * An empty page with no way forward is a dead end — a student with no enrolments
+ * should be one click from the catalogue, not left to find it — so an action is
+ * supplied wherever one exists.
+ *
+ * It is optional rather than required because one case genuinely has none: an
+ * instructor with no courses cannot create one, and inventing a button that leads to
+ * a screen they are refused would be worse than the missing button. Optional here
+ * means "there is nothing this reader may do", not "nobody got round to it".
  */
 export function EmptyState({
   icon: Icon,
@@ -19,7 +23,7 @@ export function EmptyState({
   icon?: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
-  action: { href: string; label: string };
+  action?: { href: string; label: string };
 }) {
   return (
     <Card>
@@ -29,7 +33,9 @@ export function EmptyState({
           <p className="text-lg font-medium">{title}</p>
           <p className="max-w-md text-sm text-muted-foreground text-pretty">{description}</p>
         </div>
-        <Button render={<Link href={action.href} />}>{action.label}</Button>
+        {action ? (
+          <Button render={<Link href={action.href} />}>{action.label}</Button>
+        ) : null}
       </CardContent>
     </Card>
   );

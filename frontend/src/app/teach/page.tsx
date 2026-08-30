@@ -78,10 +78,14 @@ async function TeachDashboard({ role }: { role: string }) {
             : "Every course on the platform."
         }
       >
-        <Button render={<Link href="/teach/courses/new" />}>
-          <Plus className="size-4" aria-hidden="true" />
-          New course
-        </Button>
+        {/* Hidden for instructors — and refused for them at `/teach/courses/new`,
+            then again by Strapi, which is what actually stops them. */}
+        {isInstructor ? null : (
+          <Button render={<Link href="/teach/courses/new" />}>
+            <Plus className="size-4" aria-hidden="true" />
+            New course
+          </Button>
+        )}
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -109,10 +113,14 @@ async function TeachDashboard({ role }: { role: string }) {
             title="No courses yet"
             description={
               isInstructor
-                ? "Create your first course and add lessons to it."
+                ? "Courses are created by an admin or content manager. Any course you own appears here."
                 : "No courses exist on the platform yet."
             }
-            action={{ href: "/teach/courses/new", label: "Create a course" }}
+            action={
+              isInstructor
+                ? undefined
+                : { href: "/teach/courses/new", label: "Create a course" }
+            }
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -7,7 +7,9 @@ import { createCourseAction } from "@/actions/courses";
 export const metadata: Metadata = { title: "New course" };
 
 export default async function NewCoursePage() {
-  await requireRole("admin", "content-manager", "instructor");
+  // Instructors are refused here, by the middleware before this renders and by the
+  // Strapi route policy if they get past both.
+  await requireRole("admin", "content-manager");
 
   return (
     <div className="container flex flex-col gap-8 py-10">

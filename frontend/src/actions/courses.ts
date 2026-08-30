@@ -41,11 +41,17 @@ function readCourseForm(formData: FormData) {
   });
 }
 
+/**
+ * Creation is narrower than editing on purpose: an instructor may change every field
+ * of a course they own, but the course is added to the catalogue by an admin or a
+ * content manager. `update` and `delete` below keep the wider role list for exactly
+ * that reason — the same asymmetry the Strapi route policies encode.
+ */
 export async function createCourseAction(
   _prev: unknown,
   formData: FormData
 ): Promise<ActionResult<{ slug: string }>> {
-  await requireRole("admin", "content-manager", "instructor");
+  await requireRole("admin", "content-manager");
 
   const parsed = readCourseForm(formData);
   if (!parsed.success) {

@@ -49,9 +49,7 @@ export default async function AdminCoursesPage() {
         title="All courses"
         description="Every course regardless of owner. Editing uses the same screens instructors use — the ownership policy already lets an admin through."
       >
-        {/* An admin may create a course like any other staff role — the route policy
-            already lists `admin`, and `course.create` sets ownership from the session.
-            The form itself is the shared `/teach` one, for the same reason the edit
+        {/* The create form is the shared `/teach` one, for the same reason the row
             links below are: one editor, one policy, one place for a bug. */}
         <Button render={<Link href="/teach/courses/new" />}>
           <Plus className="size-4" aria-hidden="true" />

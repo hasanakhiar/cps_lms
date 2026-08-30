@@ -49,18 +49,29 @@ export default async function ManageCoursesPage() {
             : "Every course on the platform."
         }
       >
-        <Button render={<Link href="/teach/courses/new" />}>
-          <Plus className="size-4" aria-hidden="true" />
-          New course
-        </Button>
+        {/* Instructors own courses; they do not add them to the catalogue. */}
+        {isInstructor ? null : (
+          <Button render={<Link href="/teach/courses/new" />}>
+            <Plus className="size-4" aria-hidden="true" />
+            New course
+          </Button>
+        )}
       </PageHeader>
 
       {courses.length === 0 ? (
         <EmptyState
           icon={BookOpen}
           title="No courses to manage"
-          description="Create a course to start adding lessons and quizzes."
-          action={{ href: "/teach/courses/new", label: "Create a course" }}
+          description={
+            isInstructor
+              ? "Courses are created by an admin or content manager. Any course you own appears here."
+              : "Create a course to start adding lessons and quizzes."
+          }
+          action={
+            isInstructor
+              ? undefined
+              : { href: "/teach/courses/new", label: "Create a course" }
+          }
         />
       ) : (
         <Card>
